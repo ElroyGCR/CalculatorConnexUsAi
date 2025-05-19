@@ -278,7 +278,7 @@ with proj1:
 with proj2:
     st.markdown(f"""
         <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
-            <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Monthly (22 days)</h4>
+            <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Monthly</h4>
             <p style="font-size: 22px; margin: 10px 0 5px;">
                 <span style='color:#C8E6C9;'>Savings: ${monthly_savings:.2f}</span>
             </p>
