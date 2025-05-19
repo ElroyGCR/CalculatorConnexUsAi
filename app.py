@@ -309,7 +309,7 @@ yearly_human_cost = monthly_human_cost * months_year
 yearly_ai_cost = monthly_ai_cost * months_year
 yearly_savings = monthly_savings * months_year
 
-# Create columns for projections
+# Create columns for projections with transparent backgrounds
 proj1, proj2, proj3 = st.columns(3)
 
 with proj1:
