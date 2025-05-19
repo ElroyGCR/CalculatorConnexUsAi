@@ -68,9 +68,9 @@ savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour 
 
 # —— Savings Row ———
 st.markdown("### 💰 Savings Summary")
-st.markdown("""
+savings_html = f"""
 <style>
-.savings-box {
+.savings-box {{
     background-color: #1E4620;
     color: #C8E6C9;
     padding: 20px;
@@ -79,13 +79,14 @@ st.markdown("""
     font-weight: 700;
     text-align: center;
     margin-bottom: 20px;
-}
+}}
 </style>
 <div class='savings-box'>
-    💵 Saving per Hour: ${:.2f}<br>
-    📉 Saving Percentage: {:.1f}%
+    💵 Saving per Hour: ${savings_per_hour:.2f}<br>
+    📉 Saving Percentage: {savings_pct:.1f}%
 </div>
-""".format(savings_per_hour, savings_pct), unsafe_allow_html=True)
+"""
+st.markdown(savings_html, unsafe_allow_html=True)
 
 # —— Visual Charts ——
 st.markdown("### 🌐 Visual Comparison")
