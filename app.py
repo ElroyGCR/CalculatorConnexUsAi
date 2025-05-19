@@ -99,15 +99,15 @@ st.markdown("""
 <div class='table-container'>
   <table>
     <tr><th></th><th>Human</th><th>AI</th></tr>
-    <tr><td>Cost per minute</td><td>${:.2f}</td><td>${:.2f}</td></tr>
-    <tr><td>Hourly Rate</td><td>${:.2f}</td><td>${:.2f}</td></tr>
-    <tr><td>Working hours per day</td><td>{}</td><td>{}</td></tr>
-    <tr><td>Utilization</td><td>{:.0f}%</td><td>100%</td></tr>
-    <tr><td>Cost per day</td><td>${:.2f}</td><td>${:.2f}</td></tr>
-    <tr><td>Effective hours worked</td><td>{:.2f}</td><td>{}</td></tr>
-    <tr><td>Cost per effective hour</td><td>${:.2f}</td><td>${:.2f}</td></tr>
-    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>${:.2f}</b></td></tr>
-    <tr><td><b>Saving %</b></td><td colspan="2"><b>{:.1f}%</b></td></tr>
+    <tr><td>Cost per minute</td><td>${0:.2f}</td><td>${1:.2f}</td></tr>
+    <tr><td>Hourly Rate</td><td>${2:.2f}</td><td>${3:.2f}</td></tr>
+    <tr><td>Working hours per day</td><td>{4}</td><td>{5}</td></tr>
+    <tr><td>Utilization</td><td>{6:.0f}%</td><td>100%</td></tr>
+    <tr><td>Cost per day</td><td>${7:.2f}</td><td>${8:.2f}</td></tr>
+    <tr><td>Effective hours worked</td><td>{9:.2f}</td><td>{10}</td></tr>
+    <tr><td>Cost per effective hour</td><td>${11:.2f}</td><td>${12:.2f}</td></tr>
+    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>${13:.2f}</b></td></tr>
+    <tr><td><b>Saving %</b></td><td colspan="2"><b>{14:.1f}%</b></td></tr>
   </table>
 </div>
 """.format(
@@ -127,13 +127,13 @@ s1, s2 = st.columns(2)
 with s1:
     st.markdown("""
         <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:28px; font-weight:700; color:#C8E6C9;'>
-        💵 Saving per Hour: ${:.2f}
+        💵 Saving per Hour: ${0:.2f}
         </div>
     """.format(savings_per_hour), unsafe_allow_html=True)
 with s2:
     st.markdown("""
         <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:28px; font-weight:700; color:#C8E6C9;'>
-        📉 Saving Percentage: {:.1f}%
+        📉 Saving Percentage: {0:.1f}%
         </div>
     """.format(savings_pct), unsafe_allow_html=True)
 
@@ -241,9 +241,9 @@ with proj1:
         <div style='background-color:#2A3E68; padding: 15px; border-radius:10px; text-align:center;'>
             <h4 style='color:#8BB8F8; margin:0;'>Daily</h4>
             <p style='font-size:22px; margin:10px 0 5px;'>
-                <span style='color:#FF6B6B;'>Human: ${:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${:.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${:.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${0:.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${1:.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${2:.2f}</span>
             </p>
         </div>
     """.format(cost_day, ai_hourly * hours_day, savings_per_hour * hours_day), unsafe_allow_html=True)
@@ -253,9 +253,9 @@ with proj2:
         <div style='background-color:#2A3E68; padding: 15px; border-radius:10px; text-align:center;'>
             <h4 style='color:#8BB8F8; margin:0;'>Monthly (22 days)</h4>
             <p style='font-size:22px; margin:10px 0 5px;'>
-                <span style='color:#FF6B6B;'>Human: ${:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${:.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${:.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${0:.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${1:.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${2:.2f}</span>
             </p>
         </div>
     """.format(monthly_human_cost, monthly_ai_cost, monthly_savings), unsafe_allow_html=True)
@@ -265,9 +265,9 @@ with proj3:
         <div style='background-color:#2A3E68; padding: 15px; border-radius:10px; text-align:center;'>
             <h4 style='color:#8BB8F8; margin:0;'>Yearly</h4>
             <p style='font-size:22px; margin:10px 0 5px;'>
-                <span style='color:#FF6B6B;'>Human: ${:,.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${:,.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${:,.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${0:,.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${1:,.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${2:,.2f}</span>
             </p>
         </div>
     """.format(yearly_human_cost, yearly_ai_cost, yearly_savings), unsafe_allow_html=True)
