@@ -250,7 +250,6 @@ with s2:
     """, unsafe_allow_html=True)
 
 # Add monthly and yearly projections
-st.markdown("<div class='section-heading'>📆 Cost Projections</div>", unsafe_allow_html=True)
 days_month = 22  # Average working days per month
 months_year = 12
 
@@ -298,4 +297,4 @@ with proj3:
 
 # —— Footer ——
 st.markdown("---")
-st.caption("AI vs Human Cost Calculator by ConnexUS. Built with Streamlit & Plotly.")
+
