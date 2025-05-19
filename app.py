@@ -28,12 +28,12 @@ if watermark_b64:
         <style>
         .watermark {{
           position: fixed;
-          top: 10px;
+          top: 50%;
           left: 50%;
-          transform: translateX(-50%);
-          width: 800px;
-          height: 800px;
-          opacity: 0.08;
+          transform: translate(-50%, -50%);
+          width: 600px;
+          height: 600px;
+          opacity: 0.05;
           background: url("data:image/png;base64,{watermark_b64}") no-repeat center/contain;
           pointer-events: none;
           z-index: -1;
@@ -46,8 +46,8 @@ if watermark_b64:
 logo_b64 = load_base64_image(logo_path)
 if logo_b64:
     st.sidebar.markdown(f"""
-        <div style='text-align:center;'>
-            <img src='data:image/png;base64,{logo_b64}' style='height:80px;'>
+        <div style='text-align:center; margin-bottom: 20px;'>
+            <img src='data:image/png;base64,{logo_b64}' style='max-height: 70px; width: auto;'>
         </div>
     """, unsafe_allow_html=True)
 
@@ -66,41 +66,28 @@ cost_per_eff_hour = cost_day / worked_hours if worked_hours else float('inf')
 savings_per_hour = cost_per_eff_hour - ai_hourly
 savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour else 0
 
-# —— Metrics Layout ——
-st.markdown("## 💼 AI vs Human Cost Breakdown")
-st.markdown("### Metrics Summary")
-st.markdown("<style>div.metric-block { background-color: rgba(0,0,0,0.25); padding: 15px; border-radius: 10px; margin-bottom: 10px; font-size: 20px; color: #00BFFF; }</style>", unsafe_allow_html=True)
-
-cols = st.columns(2)
-with cols[0]:
-    st.markdown("<div class='metric-block'><b>Cost per Minute (Human)</b><br>${:.2f}</div>".format(human_hourly / 60), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Hourly Rate (Human)</b><br>${:.2f}</div>".format(human_hourly), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Working Hours per Day</b><br>{}</div>".format(hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Utilization (Human)</b><br>{:.0f}%</div>".format(efficiency*100), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Day (Human)</b><br>${:.2f}</div>".format(cost_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Effective Hours Worked</b><br>{:.2f}</div>".format(worked_hours), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Effective Hour</b><br>${:.2f}</div>".format(cost_per_eff_hour), unsafe_allow_html=True)
-
-with cols[1]:
-    st.markdown("<div class='metric-block'><b>Cost per Minute (AI)</b><br>${:.2f}</div>".format(ai_cost_per_minute), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Hourly Rate (AI)</b><br>${:.2f}</div>".format(ai_hourly), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Working Hours per Day</b><br>{}</div>".format(hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Utilization (AI)</b><br>100%</div>", unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Day (AI)</b><br>${:.2f}</div>".format(ai_hourly * hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Effective Hours Worked</b><br>{:.2f}</div>".format(hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Effective Hour</b><br>${:.2f}</div>".format(ai_hourly), unsafe_allow_html=True)
-
-# —— Savings Row ——
-st.markdown("---")
+# —— Savings Row ———
 st.markdown("### 💰 Savings Summary")
-s1, s2 = st.columns(2)
-with s1:
-    st.success(f"💵 **Saving per Hour:** ${savings_per_hour:.2f}")
-with s2:
-    st.success(f"📉 **Saving Percentage:** {savings_pct:.1f}%")
+st.markdown("""
+<style>
+.savings-box {
+    background-color: #1E4620;
+    color: #C8E6C9;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 26px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+}
+</style>
+<div class='savings-box'>
+    💵 Saving per Hour: ${:.2f}<br>
+    📉 Saving Percentage: {:.1f}%
+</div>
+""".format(savings_per_hour, savings_pct), unsafe_allow_html=True)
 
 # —— Visual Charts ——
-st.markdown("---")
 st.markdown("### 🌐 Visual Comparison")
 labels = ['Human', 'AI']
 costs = [cost_per_eff_hour, ai_hourly]
