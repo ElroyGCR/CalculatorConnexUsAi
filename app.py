@@ -154,7 +154,53 @@ savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour 
 # —— Metrics Layout ——
 st.markdown("## 💼 AI vs Human Cost Breakdown")
 
-# Use columns for the metrics display
+# Add the Breakdown Table section
+st.markdown("### 📊 Breakdown Table")
+st.markdown("""
+<style>
+.table-container {
+  font-size: 18px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 20px;
+  color: #EEE;
+  margin-bottom: 30px;
+}
+.table-container th {
+  text-align: left;
+  padding-right: 20px;
+  color: #00FFAA;
+}
+.table-container td {
+  padding-bottom: 8px;
+}
+</style>
+<div class='table-container'>
+  <table>
+    <tr><th></th><th>Human</th><th>AI</th></tr>
+    <tr><td>Cost per minute</td><td>${0:.2f}</td><td>${1:.2f}</td></tr>
+    <tr><td>Hourly Rate</td><td>${2:.2f}</td><td>${3:.2f}</td></tr>
+    <tr><td>Working hours per day</td><td>{4}</td><td>{5}</td></tr>
+    <tr><td>Utilization</td><td>{6:.0f}%</td><td>100%</td></tr>
+    <tr><td>Cost per day</td><td>${7:.2f}</td><td>${8:.2f}</td></tr>
+    <tr><td>Effective hours worked</td><td>{9:.2f}</td><td>{10}</td></tr>
+    <tr><td>Cost per effective hour</td><td>${11:.2f}</td><td>${12:.2f}</td></tr>
+    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>${13:.2f}</b></td></tr>
+    <tr><td><b>Saving %</b></td><td colspan="2"><b>{14:.1f}%</b></td></tr>
+  </table>
+</div>
+""".format(
+    human_hourly/60, ai_cost_per_minute,
+    human_hourly, ai_hourly,
+    hours_day, hours_day,
+    efficiency*100,
+    cost_day, ai_hourly * hours_day,
+    worked_hours, hours_day,
+    cost_per_eff_hour, ai_hourly,
+    savings_per_hour, savings_pct
+), unsafe_allow_html=True)
+
+# Use columns for the detailed metrics display
 col1, col2 = st.columns(2)
 
 with col1:
