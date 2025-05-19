@@ -78,7 +78,7 @@ st.markdown("""
     
     /* Savings card styling */
     .savings-card {
-        background-color: #1E4620;
+        background-color: rgba(30, 70, 32, 0.8);
         padding: 20px;
         border-radius: 12px;
         font-size: 28px;
@@ -90,7 +90,7 @@ st.markdown("""
     
     /* Projections card styling */
     .projection-card {
-        background-color: #2A3E68;
+        background-color: rgba(42, 62, 104, 0.8);
         padding: 15px;
         border-radius: 10px;
         text-align: center;
@@ -113,14 +113,14 @@ st.markdown("""
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 600px;
-        height: 600px;
-        opacity: 0.05;
+        width: 800px;
+        height: 800px;
+        opacity: 0.08;
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
         pointer-events: none;
-        z-index: 0;
+        z-index: -1;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -250,99 +250,50 @@ with s2:
 # —— Visual Charts ——
 st.markdown("### 🌐 Visual Comparison")
 
-# Create two columns
-col1, col2 = st.columns(2)
+# Only show one chart - the simpler matplotlib one
+fig, ax = plt.subplots(figsize=(10, 5))
+# Set transparent background
+fig.patch.set_alpha(0)
+ax.patch.set_alpha(0)
 
-with col1:
-    # Bar Chart with Matplotlib
-    labels = ['Human', 'AI']
-    costs = [cost_per_eff_hour, ai_hourly]
-    colors = ['#FF6B6B', '#4D96FF']
+labels = ['Human', 'AI']
+costs = [cost_per_eff_hour, ai_hourly]
+colors = ['#FF6B6B', '#4D96FF']
 
-    fig, ax = plt.subplots(figsize=(6, 4))
-    # Set transparent background
-    fig.patch.set_alpha(0)
-    ax.patch.set_alpha(0)
-    
-    bars = ax.bar(labels, costs, color=colors, width=0.6, edgecolor='black')
+bars = ax.bar(labels, costs, color=colors, width=0.6, edgecolor='#FF6700', linewidth=2)
 
-    for bar in bars:
-        height = bar.get_height()
-        ax.annotate(f"${height:.2f}",
-                    xy=(bar.get_x() + bar.get_width() / 2, height),
-                    xytext=(0, 8),
-                    textcoords="offset points",
-                    ha='center', va='bottom',
-                    fontsize=12, weight='bold')
+# Add cost labels in the middle of the bars with larger text
+for i, bar in enumerate(bars):
+    height = bar.get_height()
+    # Centered cost values with larger font
+    ax.text(bar.get_x() + bar.get_width()/2, height/2,
+            f"${height:.2f}",
+            ha='center', va='center',
+            fontsize=16, fontweight='bold', color='white')
 
-    mid_y = (costs[0] + costs[1]) / 2
-    ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
-                xy=(0.5, mid_y),
-                xytext=(0.5, mid_y + 10),
-                ha='center', va='center',
-                fontsize=12,
-                bbox=dict(boxstyle="round,pad=0.5", fc="lightgreen", ec="green", lw=2))
+mid_y = (costs[0] + costs[1]) / 2
+ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
+            xy=(0.5, mid_y),
+            xytext=(0.5, mid_y + 10),
+            ha='center', va='center',
+            fontsize=14, fontweight='bold',
+            bbox=dict(boxstyle="round,pad=0.5", fc="lightgreen", ec="green", lw=2))
 
-    ax.set_ylabel("Cost per Effective Hour ($)", fontsize=12)
-    ax.set_ylim(0, max(costs[0], costs[1]) * 1.3)
-    ax.set_title("Cost Comparison: Human vs AI", fontsize=14, weight='bold')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    
-    # Set text color to white for better visibility
-    ax.title.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    
-    st.pyplot(fig)
+ax.set_ylabel("Cost per Effective Hour ($)", fontsize=14)
+ax.set_ylim(0, max(costs[0], costs[1]) * 1.3)
+ax.set_title("Cost Comparison: Human vs AI", fontsize=18, fontweight='bold')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
-with col2:
-    # Adding a Plotly interactive chart
-    fig = go.Figure()
-    
-    # Bar chart for comparison
-    fig.add_trace(go.Bar(
-        x=labels,
-        y=costs,
-        text=[f"${cost:.2f}" for cost in costs],
-        textposition='auto',
-        marker_color=colors,
-        hoverinfo='y+name'
-    ))
-    
-    # Add annotation for savings
-    fig.add_annotation(
-        x=0.5,
-        y=max(costs) * 0.7,
-        text=f"Savings: ${savings_per_hour:.2f} ({savings_pct:.1f}%)",
-        showarrow=True,
-        arrowhead=1,
-        ax=0,
-        ay=-40,
-        bgcolor="rgba(144, 238, 144, 0.6)",
-        bordercolor="green",
-        borderwidth=2,
-        borderpad=4,
-        font=dict(color="black", size=14)
-    )
-    
-    # Update layout with transparent background
-    fig.update_layout(
-        title="Interactive Cost Comparison",
-        xaxis_title="",
-        yaxis_title="Cost per Effective Hour ($)",
-        height=400,
-        margin=dict(l=40, r=40, t=60, b=60),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white"),
-        title_font_size=18
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+# Set text color to white for better visibility
+ax.title.set_color('white')
+ax.yaxis.label.set_color('white')
+ax.tick_params(axis='x', colors='white', labelsize=14)
+ax.tick_params(axis='y', colors='white', labelsize=14)
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+st.pyplot(fig)
 
 # Add monthly and yearly projections
 st.markdown("### 📆 Cost Projections")
