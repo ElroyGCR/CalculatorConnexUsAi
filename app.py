@@ -123,49 +123,49 @@ savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour 
 # —— Breakdown Table ——
 st.markdown("<div class='section-heading'>📊 Breakdown Table</div>", unsafe_allow_html=True)
 
-# Create a cleaner table with borders and exact styling from the screenshot, but without the last two rows
+# Create a cleaner, prettier table with better styling
 table_html = f"""
 <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-  <table style="background-color: rgba(0, 0, 0, 0.2); border-collapse: collapse; width: 80%; border: 1px solid #333;">
-    <tr style="border-bottom: 1px solid #333;">
-      <th style="padding: 12px; text-align: left; color: #00FFAA; border-right: 1px solid #333;"></th>
-      <th style="padding: 12px; text-align: center; color: #00FFAA; border-right: 1px solid #333;">Human</th>
-      <th style="padding: 12px; text-align: center; color: #00FFAA;">AI</th>
+  <table style="background-color: rgba(0, 0, 0, 0.2); border-collapse: collapse; width: 80%; border: 2px solid #333; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+    <tr style="border-bottom: 2px solid #333; background-color: rgba(0, 0, 0, 0.3);">
+      <th style="padding: 14px; text-align: left; color: #00FFAA; border-right: 1px solid #444; font-size: 18px;"></th>
+      <th style="padding: 14px; text-align: center; color: #00FFAA; border-right: 1px solid #444; font-size: 18px;">Human</th>
+      <th style="padding: 14px; text-align: center; color: #00FFAA; font-size: 18px;">AI</th>
     </tr>
-    <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per minute</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${human_hourly/60:.2f}</td>
+    <tr style="border-bottom: 1px solid #333; transition: background-color 0.2s;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Cost per minute</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">${human_hourly/60:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">${ai_cost_per_minute:.2f}</td>
     </tr>
-    <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Hourly Rate</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${human_hourly:.2f}</td>
+    <tr style="border-bottom: 1px solid #333; background-color: rgba(0, 0, 0, 0.1);">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Hourly Rate</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">${human_hourly:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly:.2f}</td>
     </tr>
     <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Working hours per day</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{hours_day}</td>
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Working hours per day</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">{hours_day}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">{hours_day}</td>
     </tr>
-    <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Utilization</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{efficiency*100:.0f}%</td>
+    <tr style="border-bottom: 1px solid #333; background-color: rgba(0, 0, 0, 0.1);">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Utilization</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">{efficiency*100:.0f}%</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">100%</td>
     </tr>
     <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per day</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${cost_day:.2f}</td>
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Cost per day</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">${cost_day:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly * hours_day:.2f}</td>
     </tr>
-    <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Effective hours worked</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{worked_hours:.2f}</td>
+    <tr style="border-bottom: 1px solid #333; background-color: rgba(0, 0, 0, 0.1);">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: 500;">Effective hours worked</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #444;">{worked_hours:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">{hours_day}</td>
     </tr>
-    <tr>
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per effective hour</td>
-      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${cost_per_eff_hour:.2f}</td>
-      <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly:.2f}</td>
+    <tr style="background-color: rgba(0,0,0,0.2);">
+      <td style="padding: 14px; text-align: left; color: #EEE; border-right: 1px solid #444; font-weight: bold;">Cost per effective hour</td>
+      <td style="padding: 14px; text-align: center; color: #EEE; border-right: 1px solid #444; font-weight: bold; font-size: 18px;">${cost_per_eff_hour:.2f}</td>
+      <td style="padding: 14px; text-align: center; color: #EEE; font-weight: bold; font-size: 18px;">${ai_hourly:.2f}</td>
     </tr>
   </table>
 </div>
@@ -175,17 +175,17 @@ st.markdown(table_html, unsafe_allow_html=True)
 # —— Visual Comparison - Centered and Smaller ——
 st.markdown("<div class='section-heading'>🌐 Visual Comparison</div>", unsafe_allow_html=True)
 
-# Create a centered container for the chart
+# Create a more centered container with reduced width for the chart
 st.markdown("""
 <div style="display: flex; justify-content: center; align-items: center;">
-    <div style="width: 75%;">
+    <div style="width: 60%;">
         <div id="chart-container"></div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Create a smaller, centered chart
-fig, ax = plt.subplots(figsize=(8, 5))
+# Create a smaller, centered chart with improved styling
+fig, ax = plt.subplots(figsize=(6, 4))  # Reduced from 8,5 to 6,4 for more compact appearance
 # Set transparent background
 fig.patch.set_alpha(0)
 ax.patch.set_alpha(0)
@@ -194,7 +194,7 @@ labels = ['Human', 'AI']
 costs = [cost_per_eff_hour, ai_hourly]
 colors = ['#FF6B6B', '#4D96FF']
 
-bars = ax.bar(labels, costs, color=colors, width=0.6, edgecolor='#FF6700', linewidth=2)
+bars = ax.bar(labels, costs, color=colors, width=0.5, edgecolor='#FF6700', linewidth=2)  # Smaller width for more elegant bars
 
 # Add cost labels in the middle of the bars with larger text
 for i, bar in enumerate(bars):
@@ -203,29 +203,33 @@ for i, bar in enumerate(bars):
     ax.text(bar.get_x() + bar.get_width()/2, height/2,
             f"${height:.2f}",
             ha='center', va='center',
-            fontsize=20, fontweight='bold', color='white')
+            fontsize=22, fontweight='bold', color='white')  # Increased font size
 
-mid_y = (costs[0] + costs[1]) / 2
+# Position savings box to the right of the first bar
 ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
-            xy=(0.5, (costs[0] + costs[1])/1.5),
-            xytext=(0.5, costs[0] * 0.8),
+            xy=(0.5, costs[0] * 0.9),  # Positioned between bars, aligned with top
+            xytext=(0.5, costs[0] * 0.75),  
             ha='center', va='center',
             fontsize=14, fontweight='bold',
-            bbox=dict(boxstyle="round,pad=0.5", fc="lightgreen", ec="green", lw=2))
+            bbox=dict(boxstyle="round,pad=0.6", fc="#90EE90", ec="#228B22", lw=2))  # Brighter green
 
+# Styling improvements
 ax.set_ylabel("Cost per Effective Hour ($)", fontsize=14)
-ax.set_ylim(0, max(costs[0], costs[1]) * 1.3)
-ax.set_title("Cost Comparison: Human vs AI", fontsize=18, fontweight='bold')
+ax.set_ylim(0, max(costs[0], costs[1]) * 1.2)  # Reduced extra space
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
+ax.set_axisbelow(True)  # Put grid behind bars
 
 # Set text color to white for better visibility
-ax.title.set_color('white')
-ax.yaxis.label.set_color('white')
 ax.tick_params(axis='x', colors='white', labelsize=14)
-ax.tick_params(axis='y', colors='white', labelsize=14)
+ax.tick_params(axis='y', colors='white', labelsize=12)
 ax.spines['bottom'].set_color('white')
 ax.spines['left'].set_color('white')
+ax.yaxis.label.set_color('white')
+
+# Remove title as it's redundant with the section heading
+# ax.set_title("Cost Comparison: Human vs AI", fontsize=18, fontweight='bold')
+# ax.title.set_color('white')
 
 st.pyplot(fig)
 
