@@ -173,4 +173,3 @@ st.pyplot(fig)
 # —— Footer ——
 st.markdown("---")
 st.caption("AI vs Human Cost Calculator by ConnexUS. Built with Streamlit & Plotly.")
- 
