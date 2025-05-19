@@ -101,3 +101,24 @@ with right_col:
     ax.spines['right'].set_visible(False)
 
     st.pyplot(fig)
+
+# —— Chart ——
+st.markdown("### 🌐 Visual Comparison")
+fig = go.Figure(data=[
+    go.Bar(name="Human Cost/hr", x=["Human"], y=[cost_per_eff_hour], marker_color="#EF5350"),
+    go.Bar(name="AI Cost/hr", x=["AI"], y=[ai_hourly], marker_color="#66BB6A"),
+])
+fig.update_layout(
+    yaxis_title="Cost per Effective Hour ($)",
+    barmode='group',
+    height=400,
+
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    margin=dict(l=0, r=0, t=40, b=40)
+)
+st.plotly_chart(fig, use_container_width=True)
+
+# —— Footer ——
+st.markdown("---")
+st.caption("AI vs Human Cost Calculator by ConnexUS. Built with Streamlit & Plotly.")
