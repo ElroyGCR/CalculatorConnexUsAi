@@ -21,7 +21,7 @@ def load_base64_image(image_path):
         img.save(buf, format="PNG")
         return base64.b64encode(buf.getvalue()).decode()
     except Exception as e:
-        st.warning(f"Error loading image {path}: {str(e)}")
+        st.warning(f"Error loading image {image_path}: {str(e)}")
         return None
 
 # Paths to logo and watermark
@@ -46,6 +46,24 @@ st.markdown("""
         max-height: 60px;
         width: auto;
         object-fit: contain;
+    }
+    
+    /* Table styling */
+    .table-container {
+        font-size: 18px;
+        background-color: rgba(0, 0, 0, 0.25);
+        border-radius: 10px;
+        padding: 20px;
+        color: #EEE;
+        margin-bottom: 30px;
+    }
+    .table-container th {
+        text-align: left;
+        padding-right: 20px;
+        color: #00FFAA;
+    }
+    .table-container td {
+        padding-bottom: 8px;
     }
     
     /* Metric styling */
@@ -151,91 +169,83 @@ cost_per_eff_hour = cost_day / worked_hours if worked_hours > 0 else 0
 savings_per_hour = cost_per_eff_hour - ai_hourly
 savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour > 0 else 0
 
-# —— Metrics Layout ——
-st.markdown("## 💼 AI vs Human Cost Breakdown")
-
-# Add the Breakdown Table section
+# —— Breakdown Table - avoiding format() method ——
 st.markdown("### 📊 Breakdown Table")
-st.markdown("""
-<style>
-.table-container {
-  font-size: 18px;
-  background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  padding: 20px;
-  color: #EEE;
-  margin-bottom: 30px;
-}
-.table-container th {
-  text-align: left;
-  padding-right: 20px;
-  color: #00FFAA;
-}
-.table-container td {
-  padding-bottom: 8px;
-}
-</style>
+
+# Pre-format values to avoid using str.format() method
+human_cost_per_min = f"${human_hourly/60:.2f}"
+ai_cost_per_min = f"${ai_cost_per_minute:.2f}"
+human_hourly_fmt = f"${human_hourly:.2f}"
+ai_hourly_fmt = f"${ai_hourly:.2f}"
+hours_day_fmt = f"{hours_day}"
+efficiency_fmt = f"{efficiency*100:.0f}%"
+human_cost_day = f"${cost_day:.2f}"
+ai_cost_day = f"${ai_hourly * hours_day:.2f}"
+worked_hours_fmt = f"{worked_hours:.2f}"
+hours_day_str = f"{hours_day}"
+cost_per_eff_hour_fmt = f"${cost_per_eff_hour:.2f}"
+ai_hourly_fmt2 = f"${ai_hourly:.2f}"
+savings_per_hour_fmt = f"${savings_per_hour:.2f}"
+savings_pct_fmt = f"{savings_pct:.1f}%"
+
+# Create HTML table without using format()
+table_html = f"""
 <div class='table-container'>
   <table>
     <tr><th></th><th>Human</th><th>AI</th></tr>
-    <tr><td>Cost per minute</td><td>${0:.2f}</td><td>${1:.2f}</td></tr>
-    <tr><td>Hourly Rate</td><td>${2:.2f}</td><td>${3:.2f}</td></tr>
-    <tr><td>Working hours per day</td><td>{4}</td><td>{5}</td></tr>
-    <tr><td>Utilization</td><td>{6:.0f}%</td><td>100%</td></tr>
-    <tr><td>Cost per day</td><td>${7:.2f}</td><td>${8:.2f}</td></tr>
-    <tr><td>Effective hours worked</td><td>{9:.2f}</td><td>{10}</td></tr>
-    <tr><td>Cost per effective hour</td><td>${11:.2f}</td><td>${12:.2f}</td></tr>
-    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>${13:.2f}</b></td></tr>
-    <tr><td><b>Saving %</b></td><td colspan="2"><b>{14:.1f}%</b></td></tr>
+    <tr><td>Cost per minute</td><td>{human_cost_per_min}</td><td>{ai_cost_per_min}</td></tr>
+    <tr><td>Hourly Rate</td><td>{human_hourly_fmt}</td><td>{ai_hourly_fmt}</td></tr>
+    <tr><td>Working hours per day</td><td>{hours_day_fmt}</td><td>{hours_day_fmt}</td></tr>
+    <tr><td>Utilization</td><td>{efficiency_fmt}</td><td>100%</td></tr>
+    <tr><td>Cost per day</td><td>{human_cost_day}</td><td>{ai_cost_day}</td></tr>
+    <tr><td>Effective hours worked</td><td>{worked_hours_fmt}</td><td>{hours_day_str}</td></tr>
+    <tr><td>Cost per effective hour</td><td>{cost_per_eff_hour_fmt}</td><td>{ai_hourly_fmt2}</td></tr>
+    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>{savings_per_hour_fmt}</b></td></tr>
+    <tr><td><b>Saving %</b></td><td colspan="2"><b>{savings_pct_fmt}</b></td></tr>
   </table>
 </div>
-""".format(
-    human_hourly/60, ai_cost_per_minute,
-    human_hourly, ai_hourly,
-    hours_day, hours_day,
-    efficiency*100,
-    cost_day, ai_hourly * hours_day,
-    worked_hours, hours_day,
-    cost_per_eff_hour, ai_hourly,
-    savings_per_hour, savings_pct
-), unsafe_allow_html=True)
+"""
+st.markdown(table_html, unsafe_allow_html=True)
 
-# Use columns for the detailed metrics display
+# —— Metrics Layout ——
+st.markdown("## 💼 AI vs Human Cost Breakdown")
+
+# Use columns for the metrics display
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("<div class='metric-block'><b>Cost per Minute (Human)</b><br>${0:.2f}</div>".format(human_hourly / 60), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Hourly Rate (Human)</b><br>${0:.2f}</div>".format(human_hourly), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Working Hours per Day</b><br>{0}</div>".format(hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Utilization (Human)</b><br>{0:.0f}%</div>".format(efficiency*100), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Day (Human)</b><br>${0:.2f}</div>".format(cost_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Effective Hours Worked</b><br>{0:.2f}</div>".format(worked_hours), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Effective Hour</b><br>${0:.2f}</div>".format(cost_per_eff_hour), unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Minute (Human)</b><br>${human_hourly/60:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Hourly Rate (Human)</b><br>${human_hourly:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Working Hours per Day</b><br>{hours_day}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Utilization (Human)</b><br>{efficiency*100:.0f}%</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Day (Human)</b><br>${cost_day:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Effective Hours Worked</b><br>{worked_hours:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Effective Hour</b><br>${cost_per_eff_hour:.2f}</div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown("<div class='metric-block'><b>Cost per Minute (AI)</b><br>${0:.2f}</div>".format(ai_cost_per_minute), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Hourly Rate (AI)</b><br>${0:.2f}</div>".format(ai_hourly), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Working Hours per Day</b><br>{0}</div>".format(hours_day), unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Minute (AI)</b><br>${ai_cost_per_minute:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Hourly Rate (AI)</b><br>${ai_hourly:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Working Hours per Day</b><br>{hours_day}</div>", unsafe_allow_html=True)
     st.markdown("<div class='metric-block'><b>Utilization (AI)</b><br>100%</div>", unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Day (AI)</b><br>${0:.2f}</div>".format(ai_hourly * hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Effective Hours Worked</b><br>{0:.2f}</div>".format(hours_day), unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Cost per Effective Hour</b><br>${0:.2f}</div>".format(ai_hourly), unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Day (AI)</b><br>${ai_hourly * hours_day:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Effective Hours Worked</b><br>{hours_day:.2f}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='metric-block'><b>Cost per Effective Hour</b><br>${ai_hourly:.2f}</div>", unsafe_allow_html=True)
 
 # —— Savings Row ———
 st.markdown("### 💰 Savings Summary")
 s1, s2 = st.columns(2)
 with s1:
-    st.markdown("""
+    st.markdown(f"""
         <div class="savings-card">
-        💵 Saving per Hour: ${0:.2f}
+        💵 Saving per Hour: ${savings_per_hour:.2f}
         </div>
-    """.format(savings_per_hour), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 with s2:
-    st.markdown("""
+    st.markdown(f"""
         <div class="savings-card">
-        📉 Saving Percentage: {0:.1f}%
+        📉 Saving Percentage: {savings_pct:.1f}%
         </div>
-    """.format(savings_pct), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # —— Visual Charts ——
 st.markdown("### 🌐 Visual Comparison")
@@ -352,40 +362,40 @@ yearly_savings = monthly_savings * months_year
 proj1, proj2, proj3 = st.columns(3)
 
 with proj1:
-    st.markdown("""
+    st.markdown(f"""
         <div class="projection-card">
             <h4 class="projection-title">Daily</h4>
             <p class="projection-value">
-                <span style='color:#FF6B6B;'>Human: ${0:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${1:.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${2:.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${cost_day:.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${ai_hourly * hours_day:.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${savings_per_hour * hours_day:.2f}</span>
             </p>
         </div>
-    """.format(cost_day, ai_hourly * hours_day, savings_per_hour * hours_day), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 with proj2:
-    st.markdown("""
+    st.markdown(f"""
         <div class="projection-card">
             <h4 class="projection-title">Monthly (22 days)</h4>
             <p class="projection-value">
-                <span style='color:#FF6B6B;'>Human: ${0:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${1:.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${2:.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${monthly_human_cost:.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${monthly_ai_cost:.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${monthly_savings:.2f}</span>
             </p>
         </div>
-    """.format(monthly_human_cost, monthly_ai_cost, monthly_savings), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 with proj3:
-    st.markdown("""
+    st.markdown(f"""
         <div class="projection-card">
             <h4 class="projection-title">Yearly</h4>
             <p class="projection-value">
-                <span style='color:#FF6B6B;'>Human: ${0:,.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${1:,.2f}</span><br>
-                <span style='color:#C8E6C9;'>Savings: ${2:,.2f}</span>
+                <span style='color:#FF6B6B;'>Human: ${yearly_human_cost:,.2f}</span><br>
+                <span style='color:#4D96FF;'>AI: ${yearly_ai_cost:,.2f}</span><br>
+                <span style='color:#C8E6C9;'>Savings: ${yearly_savings:,.2f}</span>
             </p>
         </div>
-    """.format(yearly_human_cost, yearly_ai_cost, yearly_savings), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # —— Footer ——
 st.markdown("---")
