@@ -48,34 +48,6 @@ st.markdown("""
         object-fit: contain;
     }
     
-    /* Table styling */
-    .table-container {
-        font-size: 18px;
-        background-color: rgba(0, 0, 0, 0.25);
-        border-radius: 10px;
-        padding: 20px;
-        color: #EEE;
-        margin-bottom: 30px;
-    }
-    .table-container th {
-        text-align: left;
-        padding-right: 20px;
-        color: #00FFAA;
-    }
-    .table-container td {
-        padding-bottom: 8px;
-    }
-    
-    /* Metric styling */
-    .metric-block {
-        background-color: rgba(0,0,0,0.25);
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        font-size: 20px;
-        color: #00BFFF;
-    }
-    
     /* Savings card styling */
     .savings-card {
         background-color: rgba(30, 70, 32, 0.8);
@@ -169,89 +141,80 @@ cost_per_eff_hour = cost_day / worked_hours if worked_hours > 0 else 0
 savings_per_hour = cost_per_eff_hour - ai_hourly
 savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour > 0 else 0
 
-# —— Breakdown Table - avoiding format() method ——
+# —— Breakdown Table ——
 st.markdown("### 📊 Breakdown Table")
 
-# Pre-format values to avoid using str.format() method
-human_cost_per_min = f"${human_hourly/60:.2f}"
-ai_cost_per_min = f"${ai_cost_per_minute:.2f}"
-human_hourly_fmt = f"${human_hourly:.2f}"
-ai_hourly_fmt = f"${ai_hourly:.2f}"
-hours_day_fmt = f"{hours_day}"
-efficiency_fmt = f"{efficiency*100:.0f}%"
-human_cost_day = f"${cost_day:.2f}"
-ai_cost_day = f"${ai_hourly * hours_day:.2f}"
-worked_hours_fmt = f"{worked_hours:.2f}"
-hours_day_str = f"{hours_day}"
-cost_per_eff_hour_fmt = f"${cost_per_eff_hour:.2f}"
-ai_hourly_fmt2 = f"${ai_hourly:.2f}"
-savings_per_hour_fmt = f"${savings_per_hour:.2f}"
-savings_pct_fmt = f"{savings_pct:.1f}%"
-
-# Create HTML table without using format()
+# Create a cleaner table with borders and exact styling from the screenshot
 table_html = f"""
-<div class='table-container'>
-  <table>
-    <tr><th></th><th>Human</th><th>AI</th></tr>
-    <tr><td>Cost per minute</td><td>{human_cost_per_min}</td><td>{ai_cost_per_min}</td></tr>
-    <tr><td>Hourly Rate</td><td>{human_hourly_fmt}</td><td>{ai_hourly_fmt}</td></tr>
-    <tr><td>Working hours per day</td><td>{hours_day_fmt}</td><td>{hours_day_fmt}</td></tr>
-    <tr><td>Utilization</td><td>{efficiency_fmt}</td><td>100%</td></tr>
-    <tr><td>Cost per day</td><td>{human_cost_day}</td><td>{ai_cost_day}</td></tr>
-    <tr><td>Effective hours worked</td><td>{worked_hours_fmt}</td><td>{hours_day_str}</td></tr>
-    <tr><td>Cost per effective hour</td><td>{cost_per_eff_hour_fmt}</td><td>{ai_hourly_fmt2}</td></tr>
-    <tr><td><b>Saving per hour</b></td><td colspan="2"><b>{savings_per_hour_fmt}</b></td></tr>
-    <tr><td><b>Saving %</b></td><td colspan="2"><b>{savings_pct_fmt}</b></td></tr>
+<div style="display: flex; justify-content: center; margin-bottom: 30px;">
+  <table style="background-color: rgba(0, 0, 0, 0.3); border-collapse: collapse; width: 70%; border: 1px solid #333;">
+    <tr style="border-bottom: 1px solid #333;">
+      <th style="padding: 12px; text-align: left; color: #00FFAA; border-right: 1px solid #333;"></th>
+      <th style="padding: 12px; text-align: center; color: #00FFAA; border-right: 1px solid #333;">Human</th>
+      <th style="padding: 12px; text-align: center; color: #00FFAA;">AI</th>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per minute</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${human_hourly/60:.2f}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">${ai_cost_per_minute:.2f}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Hourly Rate</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${human_hourly:.2f}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly:.2f}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Working hours per day</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{hours_day}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">{hours_day}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Utilization</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{efficiency*100:.0f}%</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">100%</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per day</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${cost_day:.2f}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly * hours_day:.2f}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Effective hours worked</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{worked_hours:.2f}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">{hours_day}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per effective hour</td>
+      <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${cost_per_eff_hour:.2f}</td>
+      <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly:.2f}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Saving per hour</td>
+      <td colspan="2" style="padding: 12px; text-align: center; color: #EEE;">${savings_per_hour:.2f}</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Saving %</td>
+      <td colspan="2" style="padding: 12px; text-align: center; color: #EEE;">{savings_pct:.1f}%</td>
+    </tr>
   </table>
 </div>
 """
 st.markdown(table_html, unsafe_allow_html=True)
 
-# —— Metrics Layout ——
-st.markdown("## 💼 AI vs Human Cost Breakdown")
-
-# Use columns for the metrics display
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown(f"<div class='metric-block'><b>Cost per Minute (Human)</b><br>${human_hourly/60:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Hourly Rate (Human)</b><br>${human_hourly:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Working Hours per Day</b><br>{hours_day}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Utilization (Human)</b><br>{efficiency*100:.0f}%</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Cost per Day (Human)</b><br>${cost_day:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Effective Hours Worked</b><br>{worked_hours:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Cost per Effective Hour</b><br>${cost_per_eff_hour:.2f}</div>", unsafe_allow_html=True)
-
-with col2:
-    st.markdown(f"<div class='metric-block'><b>Cost per Minute (AI)</b><br>${ai_cost_per_minute:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Hourly Rate (AI)</b><br>${ai_hourly:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Working Hours per Day</b><br>{hours_day}</div>", unsafe_allow_html=True)
-    st.markdown("<div class='metric-block'><b>Utilization (AI)</b><br>100%</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Cost per Day (AI)</b><br>${ai_hourly * hours_day:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Effective Hours Worked</b><br>{hours_day:.2f}</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='metric-block'><b>Cost per Effective Hour</b><br>${ai_hourly:.2f}</div>", unsafe_allow_html=True)
-
-# —— Savings Row ———
-st.markdown("### 💰 Savings Summary")
-s1, s2 = st.columns(2)
-with s1:
-    st.markdown(f"""
-        <div class="savings-card">
-        💵 Saving per Hour: ${savings_per_hour:.2f}
-        </div>
-    """, unsafe_allow_html=True)
-with s2:
-    st.markdown(f"""
-        <div class="savings-card">
-        📉 Saving Percentage: {savings_pct:.1f}%
-        </div>
-    """, unsafe_allow_html=True)
-
-# —— Visual Charts ——
+# —— Visual Comparison - Centered and Smaller ——
 st.markdown("### 🌐 Visual Comparison")
 
-# Only show one chart - the simpler matplotlib one
-fig, ax = plt.subplots(figsize=(10, 5))
+# Create a centered container for the chart
+st.markdown("""
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="width: 75%;">
+        <div id="chart-container"></div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Create a smaller, centered chart
+fig, ax = plt.subplots(figsize=(8, 5))
 # Set transparent background
 fig.patch.set_alpha(0)
 ax.patch.set_alpha(0)
@@ -269,12 +232,12 @@ for i, bar in enumerate(bars):
     ax.text(bar.get_x() + bar.get_width()/2, height/2,
             f"${height:.2f}",
             ha='center', va='center',
-            fontsize=16, fontweight='bold', color='white')
+            fontsize=20, fontweight='bold', color='white')
 
 mid_y = (costs[0] + costs[1]) / 2
 ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
-            xy=(0.5, mid_y),
-            xytext=(0.5, mid_y + 10),
+            xy=(0.5, (costs[0] + costs[1])/1.5),
+            xytext=(0.5, costs[0] * 0.8),
             ha='center', va='center',
             fontsize=14, fontweight='bold',
             bbox=dict(boxstyle="round,pad=0.5", fc="lightgreen", ec="green", lw=2))
@@ -294,6 +257,22 @@ ax.spines['bottom'].set_color('white')
 ax.spines['left'].set_color('white')
 
 st.pyplot(fig)
+
+# —— Savings Row ———
+st.markdown("### 💰 Savings Summary")
+s1, s2 = st.columns(2)
+with s1:
+    st.markdown(f"""
+        <div class="savings-card">
+        💵 Saving per Hour: ${savings_per_hour:.2f}
+        </div>
+    """, unsafe_allow_html=True)
+with s2:
+    st.markdown(f"""
+        <div class="savings-card">
+        📉 Saving Percentage: {savings_pct:.1f}%
+        </div>
+    """, unsafe_allow_html=True)
 
 # Add monthly and yearly projections
 st.markdown("### 📆 Cost Projections")
