@@ -144,10 +144,10 @@ savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour 
 # —— Breakdown Table ——
 st.markdown("### 📊 Breakdown Table")
 
-# Create a cleaner table with borders and exact styling from the screenshot
+# Create a cleaner table with borders and exact styling from the screenshot, but without the last two rows
 table_html = f"""
 <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-  <table style="background-color: rgba(0, 0, 0, 0.3); border-collapse: collapse; width: 70%; border: 1px solid #333;">
+  <table style="background-color: rgba(0, 0, 0, 0.2); border-collapse: collapse; width: 80%; border: 1px solid #333;">
     <tr style="border-bottom: 1px solid #333;">
       <th style="padding: 12px; text-align: left; color: #00FFAA; border-right: 1px solid #333;"></th>
       <th style="padding: 12px; text-align: center; color: #00FFAA; border-right: 1px solid #333;">Human</th>
@@ -183,18 +183,10 @@ table_html = f"""
       <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">{worked_hours:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">{hours_day}</td>
     </tr>
-    <tr style="border-bottom: 1px solid #333;">
+    <tr>
       <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Cost per effective hour</td>
       <td style="padding: 12px; text-align: center; color: #EEE; border-right: 1px solid #333;">${cost_per_eff_hour:.2f}</td>
       <td style="padding: 12px; text-align: center; color: #EEE;">${ai_hourly:.2f}</td>
-    </tr>
-    <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Saving per hour</td>
-      <td colspan="2" style="padding: 12px; text-align: center; color: #EEE;">${savings_per_hour:.2f}</td>
-    </tr>
-    <tr>
-      <td style="padding: 12px; text-align: left; color: #EEE; border-right: 1px solid #333;">Saving %</td>
-      <td colspan="2" style="padding: 12px; text-align: center; color: #EEE;">{savings_pct:.1f}%</td>
     </tr>
   </table>
 </div>
@@ -263,13 +255,13 @@ st.markdown("### 💰 Savings Summary")
 s1, s2 = st.columns(2)
 with s1:
     st.markdown(f"""
-        <div class="savings-card">
+        <div style="background-color: rgba(30, 70, 32, 0.8); padding: 20px; border-radius: 12px; font-size: 28px; font-weight: 700; color: #C8E6C9; margin-bottom: 20px; text-align: center;">
         💵 Saving per Hour: ${savings_per_hour:.2f}
         </div>
     """, unsafe_allow_html=True)
 with s2:
     st.markdown(f"""
-        <div class="savings-card">
+        <div style="background-color: rgba(30, 70, 32, 0.8); padding: 20px; border-radius: 12px; font-size: 28px; font-weight: 700; color: #C8E6C9; margin-bottom: 20px; text-align: center;">
         📉 Saving Percentage: {savings_pct:.1f}%
         </div>
     """, unsafe_allow_html=True)
@@ -293,9 +285,9 @@ proj1, proj2, proj3 = st.columns(3)
 
 with proj1:
     st.markdown(f"""
-        <div class="projection-card">
-            <h4 class="projection-title">Daily</h4>
-            <p class="projection-value">
+        <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
+            <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Daily</h4>
+            <p style="font-size: 22px; margin: 10px 0 5px;">
                 <span style='color:#FF6B6B;'>Human: ${cost_day:.2f}</span><br>
                 <span style='color:#4D96FF;'>AI: ${ai_hourly * hours_day:.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${savings_per_hour * hours_day:.2f}</span>
@@ -305,9 +297,9 @@ with proj1:
 
 with proj2:
     st.markdown(f"""
-        <div class="projection-card">
-            <h4 class="projection-title">Monthly (22 days)</h4>
-            <p class="projection-value">
+        <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
+            <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Monthly (22 days)</h4>
+            <p style="font-size: 22px; margin: 10px 0 5px;">
                 <span style='color:#FF6B6B;'>Human: ${monthly_human_cost:.2f}</span><br>
                 <span style='color:#4D96FF;'>AI: ${monthly_ai_cost:.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${monthly_savings:.2f}</span>
@@ -317,9 +309,9 @@ with proj2:
 
 with proj3:
     st.markdown(f"""
-        <div class="projection-card">
-            <h4 class="projection-title">Yearly</h4>
-            <p class="projection-value">
+        <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
+            <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Yearly</h4>
+            <p style="font-size: 22px; margin: 10px 0 5px;">
                 <span style='color:#FF6B6B;'>Human: ${yearly_human_cost:,.2f}</span><br>
                 <span style='color:#4D96FF;'>AI: ${yearly_ai_cost:,.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${yearly_savings:,.2f}</span>
