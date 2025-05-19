@@ -33,21 +33,28 @@ if watermark_b64:
           transform: translate(-50%, -50%);
           width: 600px;
           height: 600px;
-          opacity: 0.06;
+          opacity: 0.05;
           background: url("data:image/png;base64,{watermark_b64}") no-repeat center/contain;
           pointer-events: none;
-          z-index: -1;
+          z-index: 0;
         }}
         </style>
         <div class="watermark"></div>
     """, unsafe_allow_html=True)
 
-# Logo in sidebar
+# —— Header Title ——
+st.markdown("""
+    <div style='text-align:center; font-size:40px; font-weight:bold; color:#00FFAA; margin-bottom:20px;'>
+        🤖 ConnexUS AI vs Human ROI Calculator
+    </div>
+""", unsafe_allow_html=True)
+
+# —— Logo in sidebar ——
 logo_b64 = load_base64_image(logo_path)
 if logo_b64:
     st.sidebar.markdown(f"""
         <div style='text-align:center; margin-bottom: 20px;'>
-            <img src='data:image/png;base64,{logo_b64}' style='max-height: 60px; width: auto;'>
+            <img src='data:image/png;base64,{logo_b64}' style='max-height: 50px; width: auto;'>
         </div>
     """, unsafe_allow_html=True)
 
@@ -71,13 +78,13 @@ st.markdown("### 💰 Savings Summary")
 s1, s2 = st.columns(2)
 with s1:
     st.markdown("""
-        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:26px; font-weight:700; color:#C8E6C9;'>
+        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:28px; font-weight:700; color:#C8E6C9;'>
         💵 Saving per Hour: ${:.2f}
         </div>
     """.format(savings_per_hour), unsafe_allow_html=True)
 with s2:
     st.markdown("""
-        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:26px; font-weight:700; color:#C8E6C9;'>
+        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:28px; font-weight:700; color:#C8E6C9;'>
         📉 Saving Percentage: {:.1f}%
         </div>
     """.format(savings_pct), unsafe_allow_html=True)
