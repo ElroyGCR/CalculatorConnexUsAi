@@ -185,7 +185,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Create a smaller, centered chart with improved styling
-fig, ax = plt.subplots(figsize=(4, 2))  # Reduced from 8,5 to 6,4 for more compact appearance
+fig, ax = plt.subplots(figsize=(6, 7))  # Reduced from 8,5 to 6,4 for more compact appearance
 # Set transparent background
 fig.patch.set_alpha(0)
 ax.patch.set_alpha(0)
