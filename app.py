@@ -33,7 +33,7 @@ if watermark_b64:
           transform: translate(-50%, -50%);
           width: 600px;
           height: 600px;
-          opacity: 0.05;
+          opacity: 0.06;
           background: url("data:image/png;base64,{watermark_b64}") no-repeat center/contain;
           pointer-events: none;
           z-index: -1;
@@ -47,7 +47,7 @@ logo_b64 = load_base64_image(logo_path)
 if logo_b64:
     st.sidebar.markdown(f"""
         <div style='text-align:center; margin-bottom: 20px;'>
-            <img src='data:image/png;base64,{logo_b64}' style='max-height: 70px; width: auto;'>
+            <img src='data:image/png;base64,{logo_b64}' style='max-height: 60px; width: auto;'>
         </div>
     """, unsafe_allow_html=True)
 
@@ -68,25 +68,19 @@ savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour 
 
 # —— Savings Row ———
 st.markdown("### 💰 Savings Summary")
-savings_html = f"""
-<style>
-.savings-box {{
-    background-color: #1E4620;
-    color: #C8E6C9;
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 26px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 20px;
-}}
-</style>
-<div class='savings-box'>
-    💵 Saving per Hour: ${savings_per_hour:.2f}<br>
-    📉 Saving Percentage: {savings_pct:.1f}%
-</div>
-"""
-st.markdown(savings_html, unsafe_allow_html=True)
+s1, s2 = st.columns(2)
+with s1:
+    st.markdown("""
+        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:26px; font-weight:700; color:#C8E6C9;'>
+        💵 Saving per Hour: ${:.2f}
+        </div>
+    """.format(savings_per_hour), unsafe_allow_html=True)
+with s2:
+    st.markdown("""
+        <div style='background-color:#1E4620; padding: 20px; border-radius:12px; font-size:26px; font-weight:700; color:#C8E6C9;'>
+        📉 Saving Percentage: {:.1f}%
+        </div>
+    """.format(savings_pct), unsafe_allow_html=True)
 
 # —— Visual Charts ——
 st.markdown("### 🌐 Visual Comparison")
@@ -94,7 +88,7 @@ labels = ['Human', 'AI']
 costs = [cost_per_eff_hour, ai_hourly]
 colors = ['#FF6B6B', '#4D96FF']
 
-fig, ax = plt.subplots(figsize=(6, 4))
+fig, ax = plt.subplots(figsize=(6, 4), facecolor='none')
 bars = ax.bar(labels, costs, color=colors, width=0.6, edgecolor='black')
 
 for bar in bars:
@@ -114,6 +108,8 @@ ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
             fontsize=10,
             bbox=dict(boxstyle="round,pad=0.5", fc="lightgreen", ec="green", lw=2))
 
+ax.set_facecolor('none')
+fig.patch.set_facecolor('none')
 ax.set_ylabel("Cost per Effective Hour ($)")
 ax.set_ylim(0, max(costs[0], costs[1]) * 1.3)
 ax.set_title("Cost Comparison: Human vs AI", fontsize=14, weight='bold')
