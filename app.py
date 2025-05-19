@@ -119,6 +119,3 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-# —— Footer ——
-st.markdown("---")
-st.caption("AI vs Human Cost Calculator by ConnexUS. Built with Streamlit & Plotly.")
