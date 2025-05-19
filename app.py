@@ -271,8 +271,6 @@ with proj1:
         <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
             <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Daily</h4>
             <p style="font-size: 22px; margin: 10px 0 5px;">
-                <span style='color:#FF6B6B;'>Human: ${cost_day:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${ai_hourly * hours_day:.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${savings_per_hour * hours_day:.2f}</span>
             </p>
         </div>
@@ -283,8 +281,6 @@ with proj2:
         <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
             <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Monthly (22 days)</h4>
             <p style="font-size: 22px; margin: 10px 0 5px;">
-                <span style='color:#FF6B6B;'>Human: ${monthly_human_cost:.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${monthly_ai_cost:.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${monthly_savings:.2f}</span>
             </p>
         </div>
@@ -295,8 +291,6 @@ with proj3:
         <div style="background-color: rgba(42, 62, 104, 0.8); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
             <h4 style="color: #8BB8F8; margin: 0; font-size: 18px; font-weight: bold;">Yearly</h4>
             <p style="font-size: 22px; margin: 10px 0 5px;">
-                <span style='color:#FF6B6B;'>Human: ${yearly_human_cost:,.2f}</span><br>
-                <span style='color:#4D96FF;'>AI: ${yearly_ai_cost:,.2f}</span><br>
                 <span style='color:#C8E6C9;'>Savings: ${yearly_savings:,.2f}</span>
             </p>
         </div>
