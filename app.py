@@ -28,7 +28,7 @@ def load_base64_image(image_path):
 logo_path = "connexus_logo.png"
 watermark_path = "connexus_logo_watermark.png"
 
-# CSS Styling
+# —— CSS Styling ——
 st.markdown("""
 <style>
     /* Main container styling */
@@ -48,37 +48,6 @@ st.markdown("""
         object-fit: contain;
     }
     
-    /* Savings card styling */
-    .savings-card {
-        background-color: rgba(30, 70, 32, 0.8);
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 28px;
-        font-weight: 700;
-        color: #C8E6C9;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    /* Projections card styling */
-    .projection-card {
-        background-color: rgba(42, 62, 104, 0.8);
-        padding: 15px;
-        border-radius: 10px;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    .projection-title {
-        color: #8BB8F8;
-        margin: 0;
-        font-size: 18px;
-        font-weight: bold;
-    }
-    .projection-value {
-        font-size: 22px;
-        margin: 10px 0 5px;
-    }
-    
     /* Watermark */
     .watermark {
         position: fixed;
@@ -93,6 +62,16 @@ st.markdown("""
         background-size: contain;
         pointer-events: none;
         z-index: -1;
+    }
+    
+    /* Section headings */
+    .section-heading {
+        color: #00FFAA;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-left: 10px;
+        border-left: 4px solid #FF6700;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -142,7 +121,7 @@ savings_per_hour = cost_per_eff_hour - ai_hourly
 savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour > 0 else 0
 
 # —— Breakdown Table ——
-st.markdown("### 📊 Breakdown Table")
+st.markdown("<div class='section-heading'>📊 Breakdown Table</div>", unsafe_allow_html=True)
 
 # Create a cleaner table with borders and exact styling from the screenshot, but without the last two rows
 table_html = f"""
@@ -194,7 +173,7 @@ table_html = f"""
 st.markdown(table_html, unsafe_allow_html=True)
 
 # —— Visual Comparison - Centered and Smaller ——
-st.markdown("### 🌐 Visual Comparison")
+st.markdown("<div class='section-heading'>🌐 Visual Comparison</div>", unsafe_allow_html=True)
 
 # Create a centered container for the chart
 st.markdown("""
@@ -251,7 +230,7 @@ ax.spines['left'].set_color('white')
 st.pyplot(fig)
 
 # —— Savings Row ———
-st.markdown("### 💰 Savings Summary")
+st.markdown("<div class='section-heading'>💰 Savings Summary</div>", unsafe_allow_html=True)
 s1, s2 = st.columns(2)
 with s1:
     st.markdown(f"""
@@ -267,7 +246,7 @@ with s2:
     """, unsafe_allow_html=True)
 
 # Add monthly and yearly projections
-st.markdown("### 📆 Cost Projections")
+st.markdown("<div class='section-heading'>📆 Cost Projections</div>", unsafe_allow_html=True)
 days_month = 22  # Average working days per month
 months_year = 12
 
