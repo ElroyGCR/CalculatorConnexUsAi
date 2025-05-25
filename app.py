@@ -73,6 +73,16 @@ st.markdown("""
         padding-left: 10px;
         border-left: 4px solid #FF6700;
     }
+    
+    /* Chart container styling for better fit */
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-height: 50vh;
+        margin: 20px 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -108,16 +118,38 @@ if logo_b64:
 st.sidebar.header("🔧 Input Parameters")
 human_hourly = st.sidebar.number_input("Human Hourly Rate ($)", value=19.5, min_value=0.0, step=0.1)
 hours_day = st.sidebar.number_input("Working Hours per Day", value=8.0, min_value=0.0, step=0.5)
-efficiency = st.sidebar.slider("Human Agent Utilization (%)", min_value=0, max_value=100, value=65) / 100
-ai_cost_per_minute = st.sidebar.number_input("AI Cost per Minute ($)", value=0.35, min_value=0.0, step=0.01)
+efficiency = st.sidebar.slider("Human Agent Utilization (%)", min_value=0, max_value=100, value=65, step=5) / 100
+
+# Add AI Automation slider
+automation_pct = st.sidebar.slider("AI Automation Level (%)", min_value=0, max_value=100, value=50, step=5) / 100
+
+# Replace the AI cost per minute slider with a dropdown
+ai_tier_data = {
+    "Tier 1 (1,000-4,999 min) - $0.25": {"client_rate": 0.25, "ai_telephony": 0.20, "mgmt_fee": 0.05},
+    "Tier 2 (5,000-9,999 min) - $0.22": {"client_rate": 0.22, "ai_telephony": 0.18, "mgmt_fee": 0.04},
+    "Tier 3 (10,000-24,999 min) - $0.18": {"client_rate": 0.18, "ai_telephony": 0.15, "mgmt_fee": 0.03},
+    "Tier 4 (25,000-49,999 min) - $0.16": {"client_rate": 0.16, "ai_telephony": 0.14, "mgmt_fee": 0.02},
+    "Tier 5 (≥50,000 min) - $0.14": {"client_rate": 0.14, "ai_telephony": 0.12, "mgmt_fee": 0.02}
+}
+
+selected_tier = st.sidebar.selectbox("AI Cost per Minute", list(ai_tier_data.keys()), index=2)  # Default to Tier 3
+ai_cost_per_minute = ai_tier_data[selected_tier]["client_rate"]
 
 # —— Core Calculations ——
 ai_hourly = ai_cost_per_minute * 60
 cost_day = human_hourly * hours_day
 worked_hours = hours_day * efficiency
-# Fix division by zero error
+
+# Calculate blended cost based on automation level
+human_portion = 1 - automation_pct  # Percentage still handled by humans
+ai_portion = automation_pct  # Percentage handled by AI
+
+# Blended hourly cost calculation
 cost_per_eff_hour = cost_day / worked_hours if worked_hours > 0 else 0
-savings_per_hour = cost_per_eff_hour - ai_hourly
+blended_hourly_cost = (human_portion * cost_per_eff_hour) + (ai_portion * ai_hourly)
+
+# Calculate savings comparing 100% human vs blended approach
+savings_per_hour = cost_per_eff_hour - blended_hourly_cost
 savings_pct = (savings_per_hour / cost_per_eff_hour * 100) if cost_per_eff_hour > 0 else 0
 
 # —— Breakdown Table ——
@@ -172,66 +204,62 @@ table_html = f"""
 """
 st.markdown(table_html, unsafe_allow_html=True)
 
-# —— Visual Comparison - Centered and Smaller ——
+# —— Visual Comparison - Properly Sized for 15.6" Screen ——
 st.markdown("<div class='section-heading'>🌐 Visual Comparison</div>", unsafe_allow_html=True)
 
-# Create a more centered container with reduced width for the chart
-st.markdown("""
-<div style="display: flex; justify-content: center; align-items: center;">
-    <div style="width: 60%;">
-        <div id="chart-container"></div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# Create a container that fits well on a 15.6" screen
+col1, col2, col3 = st.columns([1, 2, 1])  # Center the chart with padding on sides
 
-# Create a smaller, centered chart with improved styling
-fig, ax = plt.subplots(figsize=(6, 7))  # Reduced from 8,5 to 6,4 for more compact appearance
-# Set transparent background
-fig.patch.set_alpha(0)
-ax.patch.set_alpha(0)
+with col2:
+    # Create appropriately sized chart for 15.6" screen (about 75% of screen height)
+    fig, ax = plt.subplots(figsize=(8, 6))  # Adjusted size for better fit
+    # Set transparent background
+    fig.patch.set_alpha(0)
+    ax.patch.set_alpha(0)
 
-labels = ['Human', 'AI']
-costs = [cost_per_eff_hour, ai_hourly]
-colors = ['#FF6B6B', '#4D96FF']
+    labels = ['100% Human', f'{human_portion*100:.0f}% Human +\n{ai_portion*100:.0f}% AI']
+    costs = [cost_per_eff_hour, blended_hourly_cost]
+    colors = ['#FF6B6B', '#4D96FF']
 
-bars = ax.bar(labels, costs, color=colors, width=0.5, edgecolor='#FF6700', linewidth=2)  # Smaller width for more elegant bars
+    bars = ax.bar(labels, costs, color=colors, width=0.6, edgecolor='#FF6700', linewidth=2)
 
-# Add cost labels in the middle of the bars with larger text
-for i, bar in enumerate(bars):
-    height = bar.get_height()
-    # Centered cost values with larger font
-    ax.text(bar.get_x() + bar.get_width()/2, height/2,
-            f"${height:.2f}",
-            ha='center', va='center',
-            fontsize=22, fontweight='bold', color='white')  # Increased font size
+    # Add cost labels in the middle of the bars
+    for i, bar in enumerate(bars):
+        height = bar.get_height()
+        # Centered cost values
+        ax.text(bar.get_x() + bar.get_width()/2, height/2,
+                f"${height:.2f}",
+                ha='center', va='center',
+                fontsize=16, fontweight='bold', color='white')
 
-# Position savings box to the right of the first bar
-ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
-            xy=(0.5, costs[0] * 0.9),  # Positioned between bars, aligned with top
-            xytext=(0.5, costs[0] * 0.75),  
-            ha='center', va='center',
-            fontsize=14, fontweight='bold',
-            bbox=dict(boxstyle="round,pad=0.6", fc="#90EE90", ec="#228B22", lw=2))  # Brighter green
+    # Position savings box between the bars
+    if len(bars) >= 2:
+        savings_x = (bars[0].get_x() + bars[0].get_width() + bars[1].get_x()) / 2
+        savings_y = max(costs) * 0.8
+        
+        ax.annotate(f"Savings:\n${savings_per_hour:.2f}\n({savings_pct:.1f}%)",
+                    xy=(savings_x, savings_y),
+                    ha='center', va='center',
+                    fontsize=12, fontweight='bold',
+                    bbox=dict(boxstyle="round,pad=0.5", fc="#90EE90", ec="#228B22", lw=2))
 
-# Styling improvements
-ax.set_ylabel("Cost per Effective Hour ($)", fontsize=14)
-ax.set_ylim(0, max(costs[0], costs[1]) * 1.2)  # Reduced extra space
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.set_axisbelow(True)  # Put grid behind bars
+    # Styling improvements
+    ax.set_ylabel("Cost per Effective Hour ($)", fontsize=14)
+    ax.set_ylim(0, max(costs[0], costs[1]) * 1.1)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_axisbelow(True)
 
-# Set text color to white for better visibility
-ax.tick_params(axis='x', colors='white', labelsize=14)
-ax.tick_params(axis='y', colors='white', labelsize=12)
-ax.spines['bottom'].set_color('white')
-ax.spines['left'].set_color('white')
-ax.yaxis.label.set_color('white')
+    # Set text color to white for better visibility
+    ax.tick_params(axis='x', colors='white', labelsize=12)
+    ax.tick_params(axis='y', colors='white', labelsize=11)
+    ax.spines['bottom'].set_color('white')
+    ax.spines['left'].set_color('white')
+    ax.yaxis.label.set_color('white')
 
-# Remove title as it's redundant with the section heading
-# ax.set_title("Cost Comparison: Human vs AI", fontsize=18, fontweight='bold')
-# ax.title.set_color('white')
-
-st.pyplot(fig)
+    # Improve spacing
+    plt.tight_layout()
+    st.pyplot(fig)
 
 # —— Savings Row ———
 st.markdown("<div class='section-heading'>💰 Savings Summary</div>", unsafe_allow_html=True)
@@ -253,13 +281,13 @@ with s2:
 days_month = 22  # Average working days per month
 months_year = 12
 
-# Calculate projections
+# Calculate projections for blended approach
 monthly_human_cost = cost_day * days_month
-monthly_ai_cost = ai_hourly * hours_day * days_month
+monthly_blended_cost = blended_hourly_cost * hours_day * days_month
 monthly_savings = (savings_per_hour * hours_day) * days_month
 
 yearly_human_cost = monthly_human_cost * months_year
-yearly_ai_cost = monthly_ai_cost * months_year
+yearly_blended_cost = monthly_blended_cost * months_year
 yearly_savings = monthly_savings * months_year
 
 # Create columns for projections with transparent backgrounds
@@ -298,3 +326,172 @@ with proj3:
 # —— Footer ——
 st.markdown("---")
 
+# ─── Improved FAQ Section - With Tabs for Organization ────────────────────
+st.write("## Frequently Asked Questions")
+
+# Simple text description with larger font
+st.write("#### Common questions about AI automation and how it can benefit your contact center operations.")
+
+# Use tabs to organize FAQs without nesting expanders
+faq_tabs = st.tabs([
+    "Why Choose AI", 
+    "Cost Savings", 
+    "Implementation", 
+    "Capabilities",
+    "Getting Started"
+])
+
+# Tab 1: Why Choose AI
+with faq_tabs[0]:
+    st.write("### Why Businesses Are Switching to AI Voice Agents")
+    
+    st.write("**What exactly is an AI Voice Representative?**")
+    st.write("""
+    AI Voice Representatives are cutting-edge virtual agents that revolutionize how businesses handle communications. They conduct remarkably natural phone conversations, answer complex questions, process requests, and deliver consistent excellence 24/7/365.
+    
+    Unlike human agents who need breaks, vacations, and sick days, our AI Voice Representatives work around the clock with zero downtime, zero turnover, and zero training requirements—transforming your customer service from a cost center into a competitive advantage.
+    """)
+    
+    st.write("**How do AI Voice Agents differ from traditional IVR systems?**")
+    st.write("""
+    Unlike traditional IVR systems that force callers through rigid menu trees, our AI Voice Agents engage in natural conversations. They don't just recognize keywords—they understand intent, can handle complex inquiries, and provide personalized responses that sound human, creating a dramatically improved customer experience.
+    """)
+
+# Tab 2: Cost & Efficiency
+with faq_tabs[1]:
+    st.write("### Cost Savings & Operational Efficiency")
+    
+    st.write("**What kind of cost savings can I expect?**")
+    st.write("""
+    Businesses typically slash communication costs by 50-70% when implementing AI Voice Agents. Beyond the obvious savings on salaries and benefits, you'll eliminate costly overhead from:
+
+    - Recruitment & Turnover Costs: No more spending thousands on hiring replacements for the average 30-45% annual call center attrition
+    - Training Expenses: Eliminate the 2-6 weeks of paid training for each new agent
+    - Absenteeism & No-Shows: The average call center loses 7-15% of scheduled hours to unexpected absences and no-shows
+    - Management Overhead: Reduce supervisory staff needed for scheduling, quality monitoring, and performance management
+    
+    Use our ROI calculator above to see your specific savings potential.
+    """)
+    
+    st.write("**How do AI Voice Agents improve operational efficiency?**")
+    st.write("""
+    Our AI Voice Agents transform your operation with:
+
+    - 24/7/365 Availability: Never miss another call, even at 3 AM or during holidays
+    - Infinite Scalability: Handle sudden call spikes without scrambling to staff up
+    - Zero Ramp-Up Time: Deploy additional capacity instantly during seasonal peaks
+    - Perfect Consistency: Every caller receives the same high-quality experience
+    - Zero Burnout: Unlike humans, AI agents maintain peak performance regardless of call volume or complexity
+    - Instant Knowledge Updates: New information is available across all AI agents simultaneously without training sessions
+    """)
+    
+    st.write("**What happens to my business when calls go unanswered?**")
+    st.write("""
+    Every missed call is potentially thousands in lost revenue. Studies show:
+
+    - 85% of customers whose calls go unanswered will not call back
+    - 75% of callers will form a negative impression of your business from unanswered calls
+    - The average missed sales call represents $1,200-$4,800 in lost potential revenue
+    
+    Our AI Voice Agents ensure every call is answered promptly, even during peak hours, nights, weekends, and holidays – capturing revenue that would otherwise be lost.
+    """)
+
+# Tab 3: Implementation & Integration
+with faq_tabs[2]:
+    st.write("### Implementation & Integration")
+    
+    st.write("**How long does it take to implement AI Voice Agents?**")
+    st.write("""
+    Implementation timelines depend on the specific product type you choose and your business requirements. Many of our solutions can be deployed rapidly with minimal setup time.
+    
+    Typical implementation timelines:
+    - Basic phone automation: 2-3 weeks
+    - Complex integrations: 4-8 weeks
+    - Enterprise-wide deployment: 8-12 weeks
+    
+    We work closely with your team to ensure a smooth transition with minimal disruption to your operations.
+    """)
+    
+    st.write("**Will AI Voice Agents integrate with my existing systems?**")
+    st.write("""
+    Absolutely! Our flexible integration framework connects with virtually any business system you're currently using. Whether it's a popular CRM like Salesforce, your proprietary databases, or legacy phone systems, we design custom integration pathways that make implementation smooth and non-disruptive.
+    
+    Our system works with:
+    - All major CRM platforms (Salesforce, Microsoft Dynamics, HubSpot, etc.)
+    - Custom databases and legacy systems
+    - VoIP and traditional phone systems
+    - Ticketing systems (Zendesk, ServiceNow, etc.)
+    - Knowledge bases and information repositories
+    """)
+
+# Tab 4: Capabilities & Limitations
+with faq_tabs[3]:
+    st.write("### Capabilities & Customer Experience")
+    
+    st.write("**What types of calls can AI Voice Agents handle effectively?**")
+    st.write("""
+    Our AI Voice Agents excel at handling appointment scheduling, customer service inquiries, order status updates, product information requests, lead qualification, and routine transactions. They're particularly effective for high-volume, repetitive call types that follow predictable patterns.
+    """)
+    
+    st.write("**How do AI Voice Agents handle complex or unusual customer requests?**")
+    st.write("""
+    Our AI Voice Agents are designed to recognize when a conversation exceeds their capabilities. In these situations, they seamlessly transfer the call to a human agent, providing a complete transcript and summary of the conversation so the human agent can pick up exactly where the AI left off—creating a smooth customer experience.
+    """)
+    
+    st.write("**Can AI Voice Agents make outbound calls too?**")
+    st.write("""
+    Absolutely! Our AI Voice Agents can conduct outbound calling campaigns for appointment reminders, payment collection, satisfaction surveys, lead qualification, and promotional offers. They can reach hundreds of customers simultaneously with personalized conversations that drive results.
+    """)
+    
+    st.write("**How natural do the AI Voice Agents sound?**")
+    st.write("""
+    Our advanced AI technology produces remarkably natural-sounding voices that many callers cannot distinguish from humans. The agents understand context, respond to emotional cues, adjust their tone appropriately, and can even insert thoughtful pauses and conversational fillers for an authentic experience.
+    """)
+    
+    st.write("**What languages do your AI Voice Agents support?**")
+    st.write("""
+    Our AI Voice Agents currently support over 25 languages including English, Spanish, French, German, Italian, Portuguese, Mandarin, Japanese, and Arabic. Each language version maintains natural intonation and cultural nuances for an authentic experience regardless of region.
+    """)
+
+# Tab 5: Getting Started
+with faq_tabs[4]:
+    st.write("### Getting Started & Pricing")
+    
+    st.write("**How is pricing structured for AI Voice Agents?**")
+    st.write("""
+    Our pricing models are designed to provide predictability and transparency:
+
+    - Monthly subscription based on usage volume
+    - Per-minute rates for active AI conversation time
+    - One-time implementation and integration fee
+    
+    Most clients see ROI within the first month of deployment. The calculator above demonstrates how the savings typically far exceed the investment.
+    """)
+    
+    st.write("**What's the first step in getting started with AI Voice Agents?**")
+    st.write("""
+    The process begins with a consultation where we:
+    
+    1. Assess your current call operations
+    2. Identify opportunities for AI implementation
+    3. Provide a customized proposal with expected cost savings
+    4. Create an implementation timeline
+    5. Develop an integration plan for your existing systems
+    
+    We typically begin with a pilot program focused on a specific call type to demonstrate value before expanding to additional use cases.
+    """)
+    
+    st.write("**How can I see your AI Voice Agents in action?**")
+    st.write("""
+    We offer several ways to experience our AI Voice Agents firsthand:
+    
+    - Live demonstration with your specific use cases
+    - Sample recordings of AI conversations
+    - Pilot program with limited scope to prove the concept
+    - References from existing clients in your industry
+    
+    This gives you the opportunity to evaluate the technology with your own requirements before making a decision.
+    """)
+
+# Add some spacing at the bottom
+st.write("")
